@@ -1,0 +1,23 @@
+.sm-button-danger {
+  @apply inline-flex items-center justify-center rounded-md border border-transparent bg-red-600 px-2 py-1 text-xs font-medium text-white hover:bg-red-700;
+}
+
+.sm-button-secondary {
+  @apply inline-flex items-center justify-center rounded-md border border-transparent bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-200;
+}
+
+.mini-button {
+  @apply rounded-md p-1 hover:bg-gray-200 dark:hover:text-gray-950;
+}
+
+.icon-button {
+  @apply flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-200;
+}
+
+.tab-button {
+  @apply mb-2 flex h-12 flex-1 items-center gap-2 rounded-xl py-2 pl-3 pr-2 text-sm font-medium text-foreground/70 hover:bg-slate-100 dark:hover:bg-gray-800;
+
+  &[data-state="active"] {
+    @apply bg-slate-200 font-medium text-foreground dark:bg-gray-800;
+  }
+}

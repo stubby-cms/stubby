@@ -1,0 +1,8 @@
+// This will hide the gray background highlight of a word when the cursor is on the word
+.monaco-editor .cdr.wordHighlightText {
+  display: none !important;
+}
+
+.monaco-editor .mtkb {
+  opacity: 0.7;
+}

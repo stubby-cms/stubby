@@ -1,0 +1,15 @@
+.table-default {
+  border-collapse: collapse;
+  width: 100%;
+  tr {
+    @apply border-b;
+  }
+
+  tr:last-child {
+    @apply border-b-0;
+  }
+
+  td {
+    @apply px-2 py-3;
+  }
+}

@@ -1,0 +1,11 @@
+.article {
+  @apply relative;
+
+  p > img {
+    @apply w-full rounded-3xl border bg-muted p-2 shadow-sm;
+  }
+
+  a {
+    word-wrap: break-word;
+  }
+}

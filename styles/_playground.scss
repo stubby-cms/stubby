@@ -1,0 +1,76 @@
+.playground-field {
+  @apply relative flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg border border-gray-200/70 p-1.5 dark:border-white/10;
+}
+
+.playground-method-badge {
+  @apply rounded-md bg-green-400/20 px-1.5 py-0.5 text-sm font-bold leading-5 text-green-700 dark:bg-green-400/20 dark:text-green-400;
+}
+
+.api-container-title {
+  @apply flex items-center justify-between gap-3 rounded-t-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm font-semibold dark:border-slate-700 dark:bg-slate-800;
+
+  .time-taken {
+    @apply text-xs font-normal text-slate-600 dark:text-slate-300;
+  }
+
+  .response-size {
+    @apply text-xs font-normal text-slate-600 dark:text-slate-300;
+  }
+
+  .status-code {
+    @apply block rounded-md px-2 text-xs font-bold leading-5;
+
+    &.status-success {
+      @apply bg-green-500 text-white;
+    }
+
+    &.status-error {
+      @apply bg-red-500 text-white;
+    }
+  }
+}
+
+.api-container-content {
+  @apply flex-1 space-y-6 rounded-b-xl border-b border-l border-r border-t-0 border-slate-200 px-4 py-4 dark:border-slate-700;
+}
+
+.api-container-content-full {
+  @apply flex-1 space-y-6 rounded-b-xl border-b border-l border-r border-t-0 border-slate-200 dark:border-slate-700;
+}
+
+.api-field-label {
+  @apply mb-2 font-mono text-sm font-semibold text-slate-800 dark:text-slate-200;
+}
+
+.api-field {
+  @apply relative flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg border border-gray-200/70 px-3 py-2 text-sm dark:border-white/10;
+}
+
+.optional-badge {
+  @apply rounded-md bg-yellow-400/20 px-1.5 py-0.5 text-xs font-bold leading-5 text-yellow-700 dark:bg-yellow-400/20 dark:text-yellow-400;
+}
+
+.code-samples-header {
+  @apply flex h-10 items-center justify-between rounded-t-xl border-b border-b-slate-800 bg-slate-900 px-4 text-sm font-medium;
+}
+
+.code-sample-tab {
+  @apply relative flex cursor-pointer items-center gap-2 px-3 py-2 text-[13px] text-slate-200;
+
+  &[data-state="active"] {
+    @apply text-brand;
+
+    &:after {
+      @apply absolute bottom-[2px] left-0 right-0 block h-[1px] w-full bg-brand;
+      content: "";
+    }
+  }
+}
+
+.code-sample-tab-title {
+  @apply z-10 rounded-md px-2 py-1 hover:bg-slate-500/20 hover:text-brand;
+}
+
+.code-sample-code-container {
+  @apply h-32 overflow-auto rounded-b-xl bg-slate-900;
+}

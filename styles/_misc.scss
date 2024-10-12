@@ -1,0 +1,105 @@
+.sk {
+  @apply bg-black/5 dark:bg-white/5;
+}
+
+.monaco-editor {
+  --diffRemovedColor: #ef4444;
+  --diffAddedColor: #22c55e;
+  --diffChangedColor: #007bff;
+  --offsetX: 3px;
+}
+
+.dark .monaco-editor {
+  --vscode-editor-background: hsl(var(--background));
+  --vscode-editorGutter-background: hsl(var(--background));
+}
+
+.line-decoration-added,
+.line-decoration-changed {
+  width: 3px !important;
+  transform: translateX(var(--offsetX));
+}
+
+.line-decoration-added {
+  background-color: var(--diffAddedColor);
+}
+
+.line-decoration-changed {
+  background-color: var(--diffChangedColor);
+
+  opacity: 1;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--diffChangedColor),
+    var(--diffChangedColor) 1px,
+    var(--vscode-editorGutter-background) 2px,
+    var(--vscode-editorGutter-background) 3.5px
+  );
+
+  background-repeat: repeat-y;
+}
+
+.line-decoration-removed {
+  --size: 5px;
+  transform: translate(var(--offsetX), -50%);
+  border: var(--size) solid transparent;
+  border-left-color: var(--diffRemovedColor);
+  box-sizing: border-box;
+  width: var(--size) !important;
+  height: var(--size) !important;
+
+  &.next-line {
+    bottom: 0;
+    transform: translate(var(--offsetX), 50%);
+  }
+}
+
+// Copy button
+.copy-button-container {
+  @apply relative;
+
+  .copy-button-tooltip {
+    @apply absolute left-1/2 top-11 hidden -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-brand px-1.5 py-0.5 text-xs text-brand-foreground;
+  }
+
+  &:hover {
+    .copy-button-tooltip {
+      @apply block;
+    }
+  }
+}
+
+// Loading animation
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.anim-container {
+  height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 400px;
+  margin: auto;
+
+  .spin-animation {
+    animation: spinner 20s ease-in-out infinite;
+    animation-delay: var(--delay);
+  }
+
+  .center-shape {
+    @apply fill-[#FFDD00] dark:fill-[#242214];
+    transition: all 1s ease;
+  }
+
+  &.hovered {
+    .animation-center {
+      .center-shape {
+        @apply dark:fill-[#FFDD00];
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+.prose code {
+  font-size: 14px;
+  @apply rounded-sm bg-muted px-1 font-medium;
+}
+
+.prose pre > code {
+  font-size: 14px;
+  @apply rounded-none bg-transparent px-0 font-normal;
+}
+
+.prose
+  :where(code):not(
+    :where([class~="not-prose"], [class~="not-prose"] *)
+  ):before {
+  content: "";
+  display: inline-block;
+  height: 0;
+  vertical-align: top;
+}
+
+.prose
+  :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)):after {
+  content: "";
+  display: inline-block;
+  height: 0;
+  vertical-align: top;
+}

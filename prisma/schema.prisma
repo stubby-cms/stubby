@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_DB_URL") // uses connection pooling
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String?
+  email     String?   @unique
+  hash      String?
+  salt      String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  accounts  Account[]
+  sessions  Session[]
+  sites     Site[]
+  nodes     Node[]
+}
+
+model Account {
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String?
+  refresh_token_expires_in Int?
+  access_token             String?
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?
+  session_state            String?
+  oauth_token_secret       String?
+  oauth_token              String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Site {
+  id          String    @id @default(cuid())
+  name        String?
+  description String?   @default("")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  apiKey      String?   @default(cuid())
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nodes       Node[]
+  webhooks    Webhook[]
+
+  @@index([userId])
+}
+
+enum Status {
+  draft
+  published
+}
+
+model Node {
+  id          String    @id @default(cuid())
+  name        String    @default("Untitled")
+  parent      Node?     @relation("ChildNodes", fields: [parentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  parentId    String?
+  children    Node[]    @relation("ChildNodes")
+  isFolder    Boolean   @default(false)
+  site        Site      @relation(fields: [siteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  siteId      String
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+  content     String?   @db.Text
+  output      Json?     @db.Json
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  slug        String    @db.Text
+  status      Status    @default(draft)
+  title       String?   @default("Untitled") @db.Text
+  draft       String?   @db.Text
+
+  @@unique([slug, siteId])
+  @@index([parentId])
+  @@index([siteId])
+  @@index([slug])
+}
+
+enum WebhookType {
+  updated
+  created
+}
+
+enum WebhookMethod {
+  post
+  get
+}
+
+model Webhook {
+  id          String        @id @default(cuid())
+  site        Site          @relation(fields: [siteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  siteId      String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  type        WebhookType   @default(updated)
+  url         String
+  method      WebhookMethod @default(post)
+  includeSlug Boolean       @default(true)
+  includeId   Boolean       @default(true)
+  includeName Boolean       @default(false)
+  secret      String        @default(" ") @db.Text
+
+  @@unique([type, siteId])
+  @@index([siteId])
+}
