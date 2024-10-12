@@ -1,4 +1,3 @@
-import { SetLoginCookie } from "@/components/marketing/login-cookie";
 import { CreateSite } from "@/components/site/create-site";
 import { SitesList } from "@/components/site/sites-list";
 import { Spinner } from "@/components/ui/spinner";
@@ -34,8 +33,6 @@ export default async function DashboardPage() {
           </div>
         </div>
       </div>
-
-      <SetLoginCookie />
     </div>
   );
 }

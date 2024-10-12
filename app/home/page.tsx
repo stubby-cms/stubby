@@ -1,4 +1,4 @@
-import FancyAnimation from "@/components/marketing/fancy-animation";
+import FancyAnimation from "@/components/common/fancy-animation";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
