@@ -4,7 +4,7 @@ import { pbkdf2Sync, randomBytes } from "crypto";
 const prisma = new PrismaClient();
 
 async function main() {
-  const password = "sidd123#";
+  const password = "Strong@Password";
   const salt = randomBytes(128).toString("base64");
   const hash = pbkdf2Sync(password, salt, 10000, 512, "sha512").toString("hex");
 
