@@ -4,7 +4,7 @@
   </a>
 </p>
 
-<h3 align="center">Stubby CMS — Open-source, headless CMS for self-hosting or cloud.</h3>
+<h3 align="center">Stubby CMS — The lightweight, self-hosted CMS for developers.</h3>
 
 <p align="center">
   Full control over your content, whether you host it yourself or deploy in the cloud.
@@ -51,4 +51,4 @@ Need help? Feel free to open a [GitHub issue](https://github.com/stubbycms/stubb
 
 ## License
 
-Stubby CMS is licensed under the [MIT License](./LICENSE). See the LICENSE file for more details.
+Stubby CMS is licensed under the [MIT License](./LICENSE).
