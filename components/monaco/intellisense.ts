@@ -92,8 +92,6 @@ export const registerComponentIntellisense = (monacoEditor: Monaco) => {
 
       var lastOpenedTag = getLastOpenedTag(areaUntilPositionInfo.clearedText);
 
-      console.log(lastOpenedTag);
-
       const suggestions = [
         {
           label: "Tip",

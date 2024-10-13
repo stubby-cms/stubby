@@ -18,7 +18,6 @@ async function main() {
       salt: salt,
     },
   });
-  console.log({ user });
 }
 main()
   .then(() => prisma.$disconnect())
