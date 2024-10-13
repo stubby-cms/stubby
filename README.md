@@ -33,13 +33,8 @@ Tired of bloated CMS platforms? Stubby CMS gives you simplicity, speed, and full
 
 ## Getting Started
 
-### Self-Hosting
-
-Follow the detailed guide for self-hosting in the [documentation](https://stubby.io/docs/self-hosting).
-
-### Cloud Hosting
-
-You can also deploy Stubby CMS in the cloud. Read the instructions [here](https://stubby.io/docs/cloud-deployment).
+* **Self-Hosting** — Follow the detailed guide for self-hosting in the [documentation](https://stubby.io/docs/self-hosting).
+* **Cloud Hosting** — You can also use [Stubby.io](https://stubby.io) cloud provider for free for a minimal cost.  
 
 ## Documentation
 
