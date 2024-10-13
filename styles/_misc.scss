@@ -2,58 +2,6 @@
   @apply bg-black/5 dark:bg-white/5;
 }
 
-.monaco-editor {
-  --diffRemovedColor: #ef4444;
-  --diffAddedColor: #22c55e;
-  --diffChangedColor: #007bff;
-  --offsetX: 3px;
-}
-
-.dark .monaco-editor {
-  --vscode-editor-background: hsl(var(--background));
-  --vscode-editorGutter-background: hsl(var(--background));
-}
-
-.line-decoration-added,
-.line-decoration-changed {
-  width: 3px !important;
-  transform: translateX(var(--offsetX));
-}
-
-.line-decoration-added {
-  background-color: var(--diffAddedColor);
-}
-
-.line-decoration-changed {
-  background-color: var(--diffChangedColor);
-
-  opacity: 1;
-  background: repeating-linear-gradient(
-    -45deg,
-    var(--diffChangedColor),
-    var(--diffChangedColor) 1px,
-    var(--vscode-editorGutter-background) 2px,
-    var(--vscode-editorGutter-background) 3.5px
-  );
-
-  background-repeat: repeat-y;
-}
-
-.line-decoration-removed {
-  --size: 5px;
-  transform: translate(var(--offsetX), -50%);
-  border: var(--size) solid transparent;
-  border-left-color: var(--diffRemovedColor);
-  box-sizing: border-box;
-  width: var(--size) !important;
-  height: var(--size) !important;
-
-  &.next-line {
-    bottom: 0;
-    transform: translate(var(--offsetX), 50%);
-  }
-}
-
 // Copy button
 .copy-button-container {
   @apply relative;
