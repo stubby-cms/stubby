@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "dev": "prisma generate && next dev --port 3019",
+    "dev": "prisma generate && next dev --port 3000",
     "build": "prisma generate && prisma db push && next build",
     "format:write": "prettier --write \"**/*.{css,js,json,jsx,ts,tsx}\"",
     "format": "prettier \"**/*.{css,js,json,jsx,ts,tsx}\"",
