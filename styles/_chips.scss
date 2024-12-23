@@ -1,0 +1,23 @@
+.selection-chip {
+  @apply flex items-center gap-1 rounded-lg border border-border px-2 py-1 font-mono text-sm text-slate-900 dark:bg-slate-800 dark:text-slate-100;
+
+  .check-icon {
+    @apply hidden;
+  }
+
+  &:hover {
+    @apply cursor-pointer bg-slate-100 dark:bg-slate-700;
+  }
+
+  &[data-state="on"] {
+    @apply border border-slate-300 bg-slate-100 text-brand-foreground;
+
+    .check-icon {
+      @apply block;
+    }
+
+    .add-icon {
+      @apply hidden;
+    }
+  }
+}

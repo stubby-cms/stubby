@@ -1,27 +1,7 @@
-import { NewFile, NewFolder } from "./icons";
-
 export const NodesSkeleton = () => {
   return (
-    <div
-      className="flex flex-col bg-background"
-      style={{ height: "calc(100vh - 84px)" }}
-    >
-      <div className="actions flex h-8 items-center border-b-2">
-        <div className="flex w-full items-center justify-between pl-4 pr-2">
-          <span className="text-xs font-medium uppercase text-muted-foreground">
-            Explorer
-          </span>
-          <div className="flex gap-1">
-            <button className="mini-button">
-              <NewFile />
-            </button>
-            <button className="mini-button">
-              <NewFolder />
-            </button>
-          </div>
-        </div>
-      </div>
-      <div className="flex flex-col gap-3 px-4 pt-3">
+    <div className="flex h-screen flex-col bg-secondary/40 dark:bg-secondary/20">
+      <div className="mt-[88px] flex flex-col gap-3 px-4 pt-3">
         <div className="sk h-4 rounded-xl" style={{ width: "40%" }}></div>
         <div className="sk ml-6 h-4 rounded-xl" style={{ width: "60%" }}></div>
         <div className="sk ml-6 h-4 rounded-xl" style={{ width: "55%" }}></div>

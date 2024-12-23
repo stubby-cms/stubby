@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { CopyButton } from "@/components/common/copy-button";
 import { Tabs, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { useEffect, useState } from "react";
@@ -14,84 +15,28 @@ type CodeOptions = {
 
 const getCurlCode = (options: CodeOptions) => {
   if (options.requestFor === "allPages") {
-    return `curl -X POST ${process.env.NEXT_PUBLIC_HOST}/api
-    -H "Content-Type: application/json
-    -H "Authorization: Bearer ${options.apiKey}
-    -d '{
-      "siteId": "${options.siteId}",
-      "requestFor": "${options.requestFor}"
-    }'`;
+    return `curl -X GET ${process.env.NEXT_PUBLIC_HOST}/api/v1/sites/${options.siteId}/folders?apiKey=${options.apiKey}`;
   } else if (options.requestFor === "aPage") {
-    if (options.pageSlug)
-      return `curl -X POST ${process.env.NEXT_PUBLIC_HOST}/api
-    -H "Content-Type: application/json
-    -H "Authorization: Bearer ${options.apiKey}
-    -d '{
-      "siteId": "${options.siteId}",
-      "requestFor": "${options.requestFor}",
-      "pageSlug": "${options.pageSlug}"
-    }'`;
-    else if (options.pageId)
-      return `curl -X POST ${process.env.NEXT_PUBLIC_HOST}/api
-    -H "Content-Type: application/json
-    -H "Authorization: Bearer ${options.apiKey}
-    -d '{
-      "siteId": "${options.siteId}",
-      "requestFor": "${options.requestFor}",
-      "pageId": "${options.pageId}"
-    }'`;
-    else if (options.pageSlug && options.pageId)
-      return `curl -X POST ${process.env.NEXT_PUBLIC_HOST}/api
-    -H "Content-Type: application/json
-    -H "Authorization: Bearer ${options.apiKey}
-    -d '{
-      "siteId": "${options.siteId}",
-      "requestFor": "${options.requestFor}",
-      "pageSlug": "${options.pageSlug}",
-      "pageId": "${options.pageId}"
-    }'`;
-    else
-      return `curl -X POST ${process.env.NEXT_PUBLIC_HOST}/api
-    -H "Content-Type: application/json
-    -H "Authorization: Bearer ${options.apiKey}
-    -d '{
-      "siteId": "${options.siteId}",
-      "requestFor": "${options.requestFor}"
-    }'`;
+    return `curl -X GET ${process.env.NEXT_PUBLIC_HOST}/api/v1/sites/${options.siteId}/pages/${options.pageId || options.pageSlug}?apiKey=${options.apiKey}`;
   }
 };
 
 const getJSCode = (options: CodeOptions) => {
-  let requestOptions = ``;
-
   if (options.requestFor === "allPages") {
-    requestOptions = `    requestFor: "${options.requestFor}"`;
-  } else if (options.requestFor === "aPage") {
-    if (options.pageSlug)
-      requestOptions = `    requestFor: "${options.requestFor}",
-    pageSlug: "${options.pageSlug}"`;
-    else if (options.pageId)
-      requestOptions = `    requestFor: "${options.requestFor}",
-    pageId: "${options.pageId}"`;
-    else if (options.pageSlug && options.pageId)
-      requestOptions = `    requestFor: "${options.requestFor}",
-    pageSlug: "${options.pageSlug}",
-    pageId: "${options.pageId}"`;
-    else requestOptions = `    requestFor: "${options.requestFor}"`;
+    return `
+const url = new URL(\`https://stubby.io/api/v1/sites/${options.siteId}/folders\`);
+url.searchParams.append("apiKey", "${options.apiKey}");
+const res = await fetch(url.href);
+const data = await res.json();
+`.trim();
   }
 
-  return `const res = await fetch(\`${process.env.NEXT_PUBLIC_HOST}/api/get\`, {
-  method: "POST",
-  body: JSON.stringify({
-    siteId: "${options.siteId}",\n${requestOptions}
-  }),
-  headers: {
-    "Authorization": \`Bearer ${options.apiKey}\`, 
-  }
-});
-
+  return `
+const url = new URL(\`https://stubby.io/api/v1/sites/${options.siteId}/pages/${options.pageId || options.pageSlug}\`);
+url.searchParams.append("apiKey", "${options.apiKey}");
+const res = await fetch(url.href);
 const data = await res.json(); 
-`;
+`.trim();
 };
 
 export const CodeSamples = ({ options }: { options: CodeOptions }) => {
@@ -130,7 +75,7 @@ export const CodeSamples = ({ options }: { options: CodeOptions }) => {
   return (
     <Tabs
       defaultValue={activeTab}
-      className="api-container api-tabs"
+      className="api-container api-tabs w-full overscroll-x-auto"
       onValueChange={setActiveTab}
     >
       <TabsList className="code-samples-header">
@@ -151,7 +96,7 @@ export const CodeSamples = ({ options }: { options: CodeOptions }) => {
         <CopyButton theme={"dark"} value={code} />
       </TabsList>
 
-      <div className="code-sample-code-container">
+      <div className="code-sample-code-container max-w-full overflow-auto">
         <SyntaxHighlighter
           customStyle={{
             fontFamily: "var(--font-mono)",
@@ -169,6 +114,7 @@ export const CodeSamples = ({ options }: { options: CodeOptions }) => {
             style: {
               fontFamily: "var(--font-mono)",
               fontSize: "14px",
+              whiteSpace: "break-spaces",
             },
           }}
         >

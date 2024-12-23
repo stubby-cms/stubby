@@ -1,3 +1,5 @@
+@use "sass:math";
+
 .monaco-editor {
   --diffRemovedColor: #ef4444;
   --diffAddedColor: #22c55e;
@@ -57,4 +59,128 @@
 
 .monaco-editor .mtkb {
   opacity: 0.7;
+}
+
+.monaco-editor .monaco-editor-placeholder {
+  @apply pointer-events-none italic opacity-30;
+}
+
+.monaco-editor .action-widget,
+.monaco-editor .editor-widget.suggest-widget {
+  @apply rounded-lg border !border-border bg-background shadow-sm;
+}
+
+.monaco-editor .action-widget {
+  padding: 4px 0px;
+}
+
+.monaco-editor .editor-widget.suggest-widget {
+  .monaco-list-row {
+    padding-left: 8px;
+  }
+}
+
+.monaco-editor .action-widget .monaco-list-row.group-header {
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding-bottom: 3px;
+}
+
+.monaco-editor .action-widget .monaco-scrollable-element .monaco-list-rows {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+}
+
+.monaco-editor .action-widget .monaco-list .monaco-list-row {
+  @apply font-mono;
+  align-items: center;
+  .codicon.codicon-light-bulb {
+    display: none;
+  }
+}
+
+.monaco-editor
+  .action-widget
+  .monaco-list
+  .monaco-list-row.action.focused:not(.option-disabled) {
+  @apply clear-start !bg-slate-200 dark:bg-slate-900;
+  color: #000;
+}
+
+.monaco-editor .context-view {
+  &.bottom {
+    .action-widget {
+      margin-top: 27px;
+      margin-left: -10px;
+    }
+  }
+}
+
+.manual-widget .monaco-editor .context-view {
+  &.bottom {
+    .action-widget {
+      margin-top: 8px;
+      margin-left: -10px;
+    }
+  }
+}
+
+.monaco-editor .overflowingContentWidgets {
+  .monaco-editor-overlaymessage {
+    @apply rounded-lg border !border-border bg-background px-2 py-1 text-sm shadow-sm;
+
+    .anchor.below {
+      display: none;
+    }
+
+    .message {
+      background-color: transparent;
+      border: none;
+    }
+
+    .anchor.top {
+      display: none;
+    }
+  }
+
+  .monaco-hover {
+    @apply rounded-lg border !border-border bg-background shadow-sm;
+
+    .monaco-hover-content {
+      .hover-row.status-bar .actions {
+        @apply bg-slate-50 dark:bg-slate-900;
+
+        > :first-child {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+// Scrollbar styling
+
+.monaco-editor .scrollbar.vertical,
+.monaco-editor .scrollbar.horizontal {
+  .slider {
+    border-radius: 10px !important;
+  }
+}
+
+// Toolbar
+.toolbar-inline-button {
+  @apply flex h-7 w-7 items-center justify-center rounded-md hover:bg-secondary;
+}
+
+.top-gradient {
+  @apply pointer-events-none absolute left-2 right-4 top-0 z-10 h-[80px];
+  background: linear-gradient(
+    180deg,
+    hsla(var(--background) / 0.95) 30%,
+    hsla(var(--background) / 0) 100%
+  );
 }

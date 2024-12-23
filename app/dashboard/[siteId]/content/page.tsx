@@ -1,18 +1,26 @@
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { getSite } from "@/db/sites";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import SitePage from "./site-page";
-import { getSite } from "./actions";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Content editor - Stubby CMS",
+  description: "Edit your site's content with Stubby CMS.",
+};
 
 export default async function ServerSitePage({
   params,
 }: {
-  params: { siteId: string };
+  params: Promise<{ siteId: string }>;
 }) {
-  const session = await getSession();
-  const data = await getSite(params.siteId);
+  const siteId = (await params).siteId;
 
-  if (!session || !data || data.userId !== session.user.id) {
+  const session = await getSession();
+  const data = await getSite(siteId);
+
+  if (!session || !data || data.ownerId !== session.user.id) {
     redirect("/login");
   }
 

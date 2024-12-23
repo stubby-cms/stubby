@@ -11,12 +11,12 @@ export const editorOptions = {
   wordBasedSuggestions: "off",
   wordWrapColumn: 80,
   wrappingIndent: "same",
-  tabCompletion: "onlySnippets",
+  // tabCompletion: "onlySnippets",
   scrollBeyondLastLine: false,
-  scrollBeyondLastColumn: 10,
+  scrollBeyondLastColumn: 20,
   padding: {
-    top: 10,
-    bottom: 50,
+    top: 58,
+    bottom: 200,
   },
   unicodeHighlight: {
     invisibleCharacters: true,
@@ -33,7 +33,7 @@ export const editorOptions = {
   overviewRulerLanes: 0,
   scrollbar: {
     useShadows: false,
-    verticalScrollbarSize: 8,
+    verticalScrollbarSize: 5,
   },
   glyphMargin: false,
   lineNumbers: "off",
@@ -41,4 +41,18 @@ export const editorOptions = {
   lineDecorationsWidth: 10,
   lineNumbersMinChars: 0,
   autoClosingBrackets: "never",
+  tabSize: 2,
+  hover: {
+    enabled: true,
+    hidingDelay: 1000,
+    sticky: true,
+  },
+  suggest: {
+    showWords: false,
+  },
+  fixedOverflowWidgets: true,
+  lightbulb: {
+    enabled: "off",
+  },
+  contextmenu: false,
 } as editor.IStandaloneEditorConstructionOptions;

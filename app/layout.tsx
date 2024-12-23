@@ -21,7 +21,7 @@ const mono = DM_Mono({
 
 const heading = Figtree({
   subsets: ["latin"],
-  weight: "700",
+  weight: "800",
   preload: true,
   variable: "--font-brand",
 });
@@ -33,14 +33,14 @@ const headingBold = Figtree({
   variable: "--font-brand-semibold",
 });
 
-const title = "Stubby: Simplest headless CMS for your content";
+const title = "The simplest headless CMS you'll ever need - Stubby CMS";
 
 const description =
-  "Write and manage MDX content in the cloud with Stubby CMS. Integrate with your favorite frameworks for seamless website publishing. Effortlessly create and deploy dynamic content across multiple sites.";
+  "Stubby CMS provides effortless content management for blogs, docs, and sites, with an API-first design, auto-revalidation with webhooks, a powerful mdx editor, and more.";
 
 const keywords = [
-  "nextjs cms",
-  "mdx based cms",
+  "mdx cms",
+  "self-hosted headless cms",
   "mdx headless cms",
   "mdxjs website builder",
   "headless cms for developers",
@@ -51,7 +51,7 @@ const keywords = [
   "best cms for mdx content",
   "nextjs content management system",
   "how to integrate mdx with next.js",
-  "nextjs markdown",
+  "nextjs cms",
   "Best CMS for NextJS",
 ];
 
@@ -61,10 +61,14 @@ export const metadata: Metadata = {
   keywords,
   metadataBase: new URL(process.env.NEXT_PUBLIC_HOST!),
   applicationName: "Stubby CMS",
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_HOST!,
+  },
   openGraph: {
     title,
     description,
     type: "website",
+    siteName: "Stubby",
     url: process.env.NEXT_PUBLIC_HOST!,
     images: [
       {
@@ -87,13 +91,17 @@ export default function RootLayout({
       <body
         className={clsx(
           inter.variable,
-          "min-h-screen bg-background font-sans antialiased",
+          "min-h-screen bg-background font-sans",
           mono.variable,
           heading.variable,
           headingBold.variable,
         )}
       >
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+        >
           {children}
         </ThemeProvider>
       </body>

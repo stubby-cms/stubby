@@ -44,6 +44,10 @@ $depths: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;
 
   &:focus-visible {
     @apply bg-[#fffded] outline-none dark:bg-[#1d1d1d];
+
+    .node-item .actions {
+      @apply bg-[#fffded] dark:bg-[#1d1d1d];
+    }
   }
 
   &:has(.current-page) {
@@ -57,8 +61,12 @@ $depths: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;
   &.selected.focused {
     @apply bg-[#fffded] dark:bg-[#1d1d1d];
 
+    .node-item .actions {
+      @apply bg-[#fffded] dark:bg-[#1d1d1d];
+    }
+
     &:hover {
-      .actions {
+      .node-item .actions {
         @apply bg-[#fffded] dark:bg-[#1d1d1d];
       }
     }
@@ -70,6 +78,12 @@ $depths: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;
   .drop-target {
     @apply bg-yellow-500/10;
   }
+
+  .focused {
+    .actions {
+      @apply opacity-100;
+    }
+  }
 }
 
 [data-exploration-type="dir"] img {
@@ -80,7 +94,7 @@ $depths: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;
   @apply flex items-center gap-2;
 
   .actions {
-    @apply absolute bottom-0 right-1 top-0 flex items-center gap-1 bg-gray-200 opacity-0 backdrop-blur-lg dark:bg-gray-800;
+    @apply absolute bottom-0 right-1 top-0 flex items-center gap-1 bg-gray-200 opacity-0 dark:bg-gray-800;
   }
 
   &:hover {
@@ -93,12 +107,13 @@ $depths: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;
 // Inline input
 [type="text"].inline-input {
   all: unset;
-  background-color: #fff;
   height: 30px;
   width: calc(100% - 6px);
   padding-left: 6px;
   padding-right: 6px;
   border: solid 1px transparent;
+
+  @apply bg-slate-50 dark:bg-slate-800;
 
   &:focus {
     border: solid 1px rgb(59 130 246);

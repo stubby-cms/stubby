@@ -2,16 +2,22 @@ import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import type { Monaco } from "@monaco-editor/react";
 import { getHtmlService, modelToDocument, toLsPosition } from "./utils";
 
+/**
+ * Auto close tag when user types `>`
+ * @param editorInstance
+ * @param monaco
+ * @param event
+ */
 export function autoCloseTag(
-  ed: editor.IStandaloneCodeEditor | null,
+  editorInstance: editor.IStandaloneCodeEditor | null,
   monaco: Monaco | null,
-  e: editor.IModelContentChangedEvent,
+  event: editor.IModelContentChangedEvent,
 ) {
-  if (!ed || !monaco) return;
-  let model = ed.getModel();
-  if (e.isRedoing || e.isUndoing || e.changes.length != 1) return;
+  if (!editorInstance || !monaco) return;
+  let model = editorInstance.getModel();
+  if (event.isRedoing || event.isUndoing || event.changes.length != 1) return;
 
-  const change = e.changes[0];
+  const change = event.changes[0];
 
   if (change.text == ">") {
     let document = modelToDocument(model!);
@@ -28,7 +34,7 @@ export function autoCloseTag(
 
     if (!close?.startsWith("$0")) return;
 
-    ed.executeEdits(
+    editorInstance.executeEdits(
       null,
       [
         {

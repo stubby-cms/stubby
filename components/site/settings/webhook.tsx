@@ -25,9 +25,9 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { absoluteUrl, fetcher } from "@/lib/utils";
 import { useParams } from "next/navigation";
+import useSWR, { useSWRConfig } from "swr";
 import { useState } from "react";
 import { toast } from "sonner";
-import useSWR, { useSWRConfig } from "swr";
 import { SiteSettingsPageHeader } from "../site-settings";
 
 const formSchema = z.object({
@@ -102,7 +102,6 @@ const OnPublish = ({
       setIsMutating(false);
       mutate(`/api/site/${siteId}/webhook?type=${type}`);
     } catch (error) {
-      console.log(error);
       setIsMutating(false);
     }
   }

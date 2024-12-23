@@ -1,9 +1,8 @@
 "use client";
 
 import { getId } from "@/lib/utils";
-import { Button } from "../ui/button";
 import { useParams, useRouter } from "next/navigation";
-import { defaultPageContent, defaultPageContentOutput } from "@/lib/consts";
+import { Button } from "../ui/button";
 
 export const NodeNotFound = () => {
   return (
@@ -21,7 +20,7 @@ export const NodeNotFound = () => {
 };
 
 export const NoNodes = () => {
-  const id = getId(4);
+  const id = getId(6);
   const router = useRouter();
   const siteId = useParams().siteId as string;
 

@@ -1,3 +1,4 @@
+@use "sass:meta";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -36,7 +37,7 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 0 0% 90%;
 
     --radius: 0.5rem;
   }
@@ -50,23 +51,33 @@
 
     --background: 224 71.4% 4.1%;
     --foreground: 210 20% 98%;
+
     --card: 224 71.4% 4.1%;
     --card-foreground: 210 20% 98%;
+
     --popover: 224 71.4% 4.1%;
     --popover-foreground: 210 20% 98%;
+
     --primary: 210 20% 98%;
     --primary-foreground: 220.9 39.3% 11%;
+
     --secondary: 215 27.9% 16.9%;
     --secondary-foreground: 210 20% 98%;
+
     --muted: 215 27.9% 16.9%;
     --muted-foreground: 217.9 10.6% 64.9%;
+
     --accent: 215 27.9% 16.9%;
     --accent-foreground: 210 20% 98%;
+
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 20% 98%;
+
     --border: 215 27.9% 16.9%;
     --input: 215 27.9% 16.9%;
-    --ring: 216 12.2% 83.9%;
+    --ring: 0 0% 17%;
+
+    --radius: 0.5rem;
   }
 }
 
@@ -74,20 +85,28 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
+
+  :focus-visible {
+    outline: dashed 1px hsl(var(--foreground));
+  }
 }
 
-@import "progress.scss";
-@import "resizable.scss";
-@import "explorer.scss";
-@import "layouts.scss";
-@import "buttons.scss";
-@import "misc.scss";
-@import "prose.scss";
-@import "content.scss";
-@import "table.scss";
-@import "monaco.scss";
-@import "playground.scss";
+@include meta.load-css("progress.scss");
+@include meta.load-css("resizable.scss");
+@include meta.load-css("explorer.scss");
+@include meta.load-css("layouts.scss");
+@include meta.load-css("buttons.scss");
+@include meta.load-css("chips.scss");
+@include meta.load-css("misc.scss");
+@include meta.load-css("prose.scss");
+@include meta.load-css("content.scss");
+@include meta.load-css("table.scss");
+@include meta.load-css("monaco.scss");
+@include meta.load-css("playground.scss");
+@include meta.load-css("gdg.scss");
+@include meta.load-css("schema.scss");

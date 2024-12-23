@@ -4,7 +4,7 @@
 }
 
 .nav-bar {
-  @apply fixed left-0 right-0 flex items-center justify-between border-b px-4 shadow-sm;
+  @apply fixed left-0 right-0 flex items-center justify-between border-b bg-secondary/30 px-4;
   height: var(--nav-height);
 }
 
@@ -39,8 +39,6 @@
     @apply text-yellow-950 opacity-100 dark:text-foreground;
   }
 }
-
-// Marketing site styles
 
 .m-container {
   @apply container;

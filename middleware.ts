@@ -8,6 +8,10 @@ export const config = {
 export default async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
+  if (req.nextUrl.pathname.endsWith(".png")) {
+    return NextResponse.next();
+  }
+
   const dashboardRegex = /^\/dashboard\/[a-z]{7}$/;
 
   // Redirect /dashboard/:id to /dashboard/:id/content immediately before the login check

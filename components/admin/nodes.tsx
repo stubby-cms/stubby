@@ -3,32 +3,26 @@
 import { createFileSystem } from "@/lib/tree";
 import { absoluteUrl, fetcher } from "@/lib/utils";
 import { createFileTree, type FileTreeSnapshot } from "exploration";
-import { useRouter } from "next/navigation";
-import { useMemo } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useMemo, memo } from "react";
 import { toast } from "sonner";
 import useSWR, { useSWRConfig } from "swr";
 import { PageBrowser } from "./page-browser";
 import { NodesSkeleton } from "./skeletons";
 import { addNodeFn } from "@/app/dashboard/node-actions";
 import { nodeMutationStatus$ } from "@/app/dashboard/state";
+import { Node } from "@/lib/tree";
 
-export interface Node {
-  id: string;
-  name: string;
-  displayName: string;
-  isFolder: boolean;
-  parentId: string | null;
-}
-
-const sortFn = (a: Node, b: Node) => {
+export const sortFn = (a: Node, b: Node) => {
   if (a.isFolder && !b.isFolder) return -1;
   if (!a.isFolder && b.isFolder) return 1;
   return a.displayName.localeCompare(b.displayName);
 };
 
-const Nodes = ({ siteId }: { siteId: string }) => {
+const Nodes = memo(() => {
   const router = useRouter();
   const { mutate } = useSWRConfig();
+  const siteId = useParams().siteId as string;
 
   const { data, isLoading } = useSWR<Node[]>(
     `/api/site/${siteId}/nodes`,
@@ -89,8 +83,6 @@ const Nodes = ({ siteId }: { siteId: string }) => {
       nodeMutationStatus$.set(false);
     } catch (error) {
       nodeMutationStatus$.set(false);
-
-      console.log(error);
     }
   };
 
@@ -135,7 +127,7 @@ const Nodes = ({ siteId }: { siteId: string }) => {
   }
 
   return (
-    <div className="flex flex-col">
+    <>
       {tree && (
         <PageBrowser
           deleteNode={deleteNode}
@@ -144,8 +136,10 @@ const Nodes = ({ siteId }: { siteId: string }) => {
           tree={tree}
         ></PageBrowser>
       )}
-    </div>
+    </>
   );
-};
+});
+
+Nodes.displayName = "Nodes";
 
 export default Nodes;

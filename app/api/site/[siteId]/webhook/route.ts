@@ -6,9 +6,9 @@ import { type Webhook } from "@prisma/client";
 export const PATCH = async (
   req: NextRequest,
   {
-    params: { siteId },
+    params,
   }: {
-    params: { siteId: string };
+    params: Promise<{ siteId: string }>;
   },
 ) => {
   const data = (await req.json()) as Webhook;
@@ -18,13 +18,15 @@ export const PATCH = async (
     return NextResponse.json({ message: "unauthorized" }, { status: 401 });
   }
 
+  const siteId = (await params).siteId;
+
   const siteData = await prisma.site.findUnique({
     where: {
       id: siteId,
     },
   });
 
-  if (!siteData || siteData.userId !== session.user.id) {
+  if (!siteData || siteData.ownerId !== session.user.id) {
     return NextResponse.json({ message: "not found" }, { status: 404 });
   }
 
@@ -47,9 +49,9 @@ export const PATCH = async (
 export const GET = async (
   req: NextRequest,
   {
-    params: { siteId },
+    params,
   }: {
-    params: { siteId: string };
+    params: Promise<{ siteId: string }>;
   },
 ) => {
   const session = await getSession();
@@ -60,13 +62,15 @@ export const GET = async (
     return NextResponse.json({ message: "unauthorized" }, { status: 401 });
   }
 
+  const siteId = (await params).siteId;
+
   const siteData = await prisma.site.findUnique({
     where: {
       id: siteId as string,
     },
   });
 
-  if (!siteData || siteData.userId !== session.user.id) {
+  if (!siteData || siteData.ownerId !== session.user.id) {
     return NextResponse.json({ message: "not found" }, { status: 404 });
   }
 
@@ -80,7 +84,6 @@ export const GET = async (
 
     return NextResponse.json(webhooks);
   } catch (error) {
-    console.log(error);
     return NextResponse.json({ message: "error" }, { status: 500 });
   }
 };
@@ -88,9 +91,9 @@ export const GET = async (
 export const POST = async (
   req: NextRequest,
   {
-    params: { siteId },
+    params,
   }: {
-    params: { siteId: string };
+    params: Promise<{ siteId: string }>;
   },
 ) => {
   const data = (await req.json()) as Webhook;
@@ -100,13 +103,15 @@ export const POST = async (
     return NextResponse.json({ message: "unauthorized" }, { status: 401 });
   }
 
+  const siteId = (await params).siteId;
+
   const siteData = await prisma.site.findUnique({
     where: {
       id: siteId,
     },
   });
 
-  if (!siteData || siteData.userId !== session.user.id) {
+  if (!siteData || siteData.ownerId !== session.user.id) {
     return NextResponse.json({ message: "not found" }, { status: 404 });
   }
 

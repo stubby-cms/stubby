@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { siteId: string } },
+  { params }: { params: Promise<{ siteId: string }> },
 ) {
   const session = await getSession();
 
@@ -12,7 +12,7 @@ export async function DELETE(
     return NextResponse.json({ message: "unauthorized" }, { status: 401 });
   }
 
-  const siteId = params.siteId;
+  const siteId = (await params).siteId;
 
   try {
     const response = await prisma.site.delete({
@@ -32,7 +32,7 @@ export async function DELETE(
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { siteId: string } },
+  { params }: { params: Promise<{ siteId: string }> },
 ) {
   const session = await getSession();
 
@@ -40,7 +40,7 @@ export async function GET(
     return NextResponse.json({ message: "unauthorized" }, { status: 401 });
   }
 
-  const siteId = params.siteId;
+  const siteId = (await params).siteId;
 
   try {
     const response = await prisma.site.findUnique({
@@ -49,7 +49,7 @@ export async function GET(
       },
     });
 
-    if (response?.userId !== session.user.id) {
+    if (response?.ownerId !== session.user.id) {
       return NextResponse.json({ message: "unauthorized" }, { status: 401 });
     }
 
@@ -67,7 +67,7 @@ export async function PATCH(
   {
     params,
   }: {
-    params: { siteId: string };
+    params: Promise<{ siteId: string }>;
   },
 ) {
   const data = await req.json();
@@ -78,7 +78,7 @@ export async function PATCH(
     return NextResponse.json({ message: "unauthorized" }, { status: 401 });
   }
 
-  const siteId = params.siteId;
+  const siteId = (await params).siteId;
 
   try {
     const response = await prisma.site.update({

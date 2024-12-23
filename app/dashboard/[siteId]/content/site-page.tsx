@@ -44,37 +44,19 @@ export default function SitePage() {
 
   if (nodesLoading) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center">
+      <div className="fixed inset-0 flex items-center justify-center">
         <Spinner />
       </div>
     );
   }
 
   return (
-    <div className="main-chrome">
-      <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={15} maxSize={30} minSize={4}>
-          <Suspense fallback={null}>
-            <Nodes siteId={siteId} />
-          </Suspense>
-        </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel defaultSize={85}>
-          {nodes && nodes.length == 0 ? (
-            <NoNodes />
-          ) : (
-            <>
-              {pageId && (
-                <PageEditor
-                  key={`${siteId}-${pageId}`}
-                  siteId={siteId}
-                  pageId={pageId}
-                ></PageEditor>
-              )}
-            </>
-          )}
-        </ResizablePanel>
-      </ResizablePanelGroup>
-    </div>
+    <>
+      {nodes && nodes.length == 0 ? (
+        <NoNodes />
+      ) : (
+        <>{pageId && <PageEditor key={`${siteId}-${pageId}`}></PageEditor>}</>
+      )}
+    </>
   );
 }

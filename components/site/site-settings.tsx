@@ -2,7 +2,7 @@
 
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-import { AlertTriangle, Cable, Cog, KeyRound, Settings } from "lucide-react";
+import { AlertTriangle, Cable, KeyRound, Settings } from "lucide-react";
 import { ReactNode, useState } from "react";
 import {
   Dialog,
@@ -14,6 +14,7 @@ import { ApiKeysSettings } from "./settings/api-keys";
 import { DangerSettings } from "./settings/danger";
 import { GeneralSettings } from "./settings/general";
 import { WebhookSettings } from "./settings/webhook";
+import { useRouter } from "next/navigation";
 
 export const SiteSettingsPageHeader = ({
   title,
@@ -35,7 +36,7 @@ const SiteSettings = ({ onDeleted }: { onDeleted: () => void }) => {
   const tabs = [
     {
       label: "General",
-      icon: <Cog size={iconSize} />,
+      icon: <Settings size={iconSize} />,
       value: "general",
     },
     {
@@ -106,6 +107,7 @@ export const SiteSettingsDialog = ({
   trigger?: ReactNode;
 }) => {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -126,6 +128,7 @@ export const SiteSettingsDialog = ({
         <DialogTitle className="sr-only">Settings</DialogTitle>
         <SiteSettings
           onDeleted={() => {
+            router.push("/dashboard");
             setOpen(false);
           }}
         />

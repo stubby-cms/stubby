@@ -1,58 +1,31 @@
 "use client";
 
-import { extractFrontMatter } from "@/lib/extract-frontmatter";
-import Markdown from "markdown-to-jsx";
-import { ErrorBoundary } from "react-error-boundary";
-import { components } from "./components";
-import { MdFallback } from "./fallbacks";
+import { draft$ } from "@/app/dashboard/state";
+import { observer } from "@legendapp/state/react";
 import { Node } from "@prisma/client";
 import { MdSkeleton } from "./skeletons";
-import { Key } from "lucide-react";
-import { ShowApiEndPoint } from "./show-api-endpoint";
-import { ShowFrontMatter } from "./show-front-matter";
-import { draft$ } from "@/app/dashboard/state";
+import { Suspense } from "react";
+import dynamic from "next/dynamic";
 
-export function MdPreview({ mdx }: { mdx: string }) {
-  const { content, data } = extractFrontMatter(mdx);
+const MdPreviewClient = dynamic(() =>
+  import("./md-preview").then((mod) => mod.MdPreviewClient),
+);
 
-  return (
-    <ErrorBoundary FallbackComponent={MdFallback}>
-      {data && data.title && (
-        <h1 className="title text-foreground">{data.title}</h1>
-      )}
-      {content && (
-        <Markdown
-          options={{
-            overrides: components,
-          }}
-        >
-          {content}
-        </Markdown>
-      )}
-    </ErrorBoundary>
-  );
-}
+export const PagePreview = observer(
+  ({ node, nodeLoading }: { node: Node | undefined; nodeLoading: boolean }) => {
+    const draft = draft$.get();
 
-export function PagePreview({
-  node,
-  nodeLoading,
-}: {
-  node: Node | undefined;
-  nodeLoading: boolean;
-}) {
-  const draft = draft$.get();
+    if (nodeLoading) return <MdSkeleton />;
 
-  if (nodeLoading) return <MdSkeleton />;
-
-  return (
-    <>
-      {nodeLoading ? (
-        <MdSkeleton />
-      ) : (
-        <>
-          {node && (
-            <div id="preview" className="h-full w-full overflow-y-auto">
-              <div className="flex justify-between border-b px-10 py-2">
+    return (
+      <>
+        {nodeLoading ? (
+          <MdSkeleton />
+        ) : (
+          <>
+            {node && (
+              <div id="preview" className="h-screen w-full overflow-y-auto">
+                {/* <div className="flex h-10 justify-between border-b px-10">
                 <span className="flex items-center gap-2 overflow-hidden text-sm text-muted-foreground">
                   <span title="Slug">
                     <Key size={14} />
@@ -65,14 +38,17 @@ export function PagePreview({
                   <span className="text-muted-foreground">•</span>
                   <ShowFrontMatter data={(node?.output as any).frontmatter} />
                 </div>
+              </div> */}
+                <div className="article prose p-10 dark:prose-dark">
+                  <Suspense fallback={<MdSkeleton />}>
+                    <MdPreviewClient mdx={draft}></MdPreviewClient>
+                  </Suspense>
+                </div>
               </div>
-              <div className="article prose p-10 dark:prose-dark">
-                {node && <MdPreview mdx={draft}></MdPreview>}
-              </div>
-            </div>
-          )}
-        </>
-      )}
-    </>
-  );
-}
+            )}
+          </>
+        )}
+      </>
+    );
+  },
+);

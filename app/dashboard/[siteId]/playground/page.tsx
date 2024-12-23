@@ -1,17 +1,18 @@
+import { getSite } from "@/db/sites";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { PlaygroundPage } from "./play-ground-page";
-import { getSite } from "../content/actions";
 
 export default async function ServerSitePage({
   params,
 }: {
-  params: { siteId: string };
+  params: Promise<{ siteId: string }>;
 }) {
+  const { siteId } = await params;
   const session = await getSession();
-  const data = await getSite(params.siteId);
+  const data = await getSite(siteId);
 
-  if (!session || !data || data.userId !== session.user.id) {
+  if (!session || !data || data.ownerId !== session.user.id) {
     redirect("/login");
   }
 

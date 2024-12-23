@@ -1,14 +1,28 @@
+import { createErrorResponse } from "@/app/api/utils/errors";
 import { getSession } from "@/lib/auth";
-import { extractFrontMatter } from "@/lib/extract-frontmatter";
+import { extractFrontMatter } from "@/lib/frontmatter";
 import prisma from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
+import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import { MdPreview, getToc } from "./md";
+import { getToc } from "./md";
+
+const checkIfUserCanUpdateSite = async (siteId: string, ownerId: string) => {
+  const site = await prisma.site.findFirst({
+    where: {
+      id: siteId,
+      ownerId: ownerId,
+    },
+  });
+
+  return site ? true : false;
+};
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { siteId: string; nodeId: string } },
+  { params }: { params: Promise<{ siteId: string; nodeId: string }> },
 ) {
+  const { nodeId } = await params;
   const session = await getSession();
 
   if (!session) {
@@ -17,7 +31,7 @@ export async function DELETE(
 
   const nodes = await prisma.node.delete({
     where: {
-      id: params.nodeId,
+      id: nodeId,
     },
   });
 
@@ -26,9 +40,10 @@ export async function DELETE(
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { siteId: string; nodeId: string } },
+  { params }: { params: Promise<{ siteId: string; nodeId: string }> },
 ) {
   const session = await getSession();
+  const { siteId, nodeId } = await params;
 
   if (!session) {
     return NextResponse.json({ message: "unauthorized" }, { status: 401 });
@@ -37,8 +52,8 @@ export async function GET(
   try {
     const node = await prisma.node.findUnique({
       where: {
-        id: params.nodeId,
-        siteId: params.siteId,
+        id: nodeId,
+        siteId: siteId,
       },
     });
 
@@ -57,28 +72,30 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { siteId: string; nodeId: string } },
+  { params }: { params: Promise<{ siteId: string; nodeId: string }> },
 ) {
+  const { siteId, nodeId } = await params;
   const session = await getSession();
   const data = await req.json();
 
-  if (!session) {
-    return NextResponse.json({ message: "unauthorized" }, { status: 401 });
+  if (!session || !(await checkIfUserCanUpdateSite(siteId, session.user.id))) {
+    return createErrorResponse(
+      "You are not authorized to update this node",
+      403,
+    );
   }
 
   const newData: any = {};
 
-  if (data.name) {
-    newData["name"] = data.name;
-  }
+  if (data.name) newData["name"] = data.name;
+  if (data.slug) newData["slug"] = data.slug;
+  if (data.draft) newData["draft"] = data.draft;
+  if (data.schemaId) newData["schemaId"] = data.schemaId;
 
-  if (data.slug) {
-    newData["slug"] = data.slug;
-  }
-
-  if (data.draft) {
-    newData["draft"] = data.draft;
-  }
+  // db
+  if (data.type === "db") newData["type"] = "db";
+  if (data.dbContent) newData["dbContent"] = data.dbContent;
+  if (data.dbCols) newData["dbCols"] = data.dbCols;
 
   if (data.content) {
     newData["content"] = data.content;
@@ -86,24 +103,15 @@ export async function PATCH(
     newData["isPublished"] = true;
 
     const { content, data: fm } = extractFrontMatter(data.content);
-    const ReactDOMServer = (await import("react-dom/server")).default;
-    let html = ReactDOMServer.renderToString(MdPreview(content));
-    const toc = getToc(data.content);
+    const toc = getToc(content);
 
     const output = {
-      html: html,
       toc: toc,
-      frontmatter: fm,
+      metadata: fm,
     };
 
     if (fm) {
-      if (fm.slug) {
-        newData["slug"] = fm.slug;
-      } else if (fm.title || fm.name) {
-        if (fm.name) newData["slug"] = slugify(fm.name);
-        if (fm.title) newData["slug"] = slugify(fm.title);
-      }
-
+      if (fm.slug) newData["slug"] = fm.slug;
       if (fm.title) newData["title"] = fm.title;
     }
 
@@ -118,95 +126,81 @@ export async function PATCH(
     }
   }
 
-  if (data.slug) {
-    newData["slug"] = slugify(data.slug);
-  }
+  if (data.slug) newData["slug"] = slugify(data.slug);
+
+  let node = null;
 
   try {
-    const node = await prisma.node.update({
+    node = await prisma.node.update({
       where: {
-        id: params.nodeId,
+        id: nodeId,
       },
       data: newData,
     });
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      switch (err.code) {
+        case "P2002":
+          return createErrorResponse(
+            "Page with the same slug already exists",
+            400,
+          );
+        case "P2025":
+          return createErrorResponse("Node not found", 404);
+        default:
+          return createErrorResponse("Failed to update node", 500);
+      }
+    } else {
+      return createErrorResponse("Failed to update node", 500);
+    }
+  }
 
-    let hookResponse = null;
+  let hookResponse = null;
 
-    if (newData.content) {
-      const hook = await prisma.webhook.findFirst({
-        where: {
-          siteId: params.siteId,
-          type: "updated",
-        },
-      });
+  if (newData.content) {
+    const hook = await prisma.webhook.findFirst({
+      where: {
+        siteId: siteId,
+        type: "updated",
+      },
+    });
 
-      try {
-        if (hook) {
-          let options: any = {
-            method: "POST",
+    try {
+      if (hook) {
+        let options: any = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+
+        if (hook.method == "get") {
+          options = {
+            method: "GET",
             headers: {
               "Content-Type": "application/json",
             },
           };
-
-          if (hook.method == "get") {
-            options = {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            };
-          }
-
-          const url = new URL(hook.url);
-
-          if (hook.includeSlug) {
-            url.searchParams.append("slug", node.slug);
-          }
-
-          if (hook.includeId) {
-            url.searchParams.append("id", node.id);
-          }
-
-          if (hook.includeName) {
-            url.searchParams.append("name", node.name);
-          }
-
-          const res = await fetch(url.href, options);
-          hookResponse = res.ok && res.status === 200 ? true : false;
         }
 
-        const response: any = {
-          message: "success",
-          id: node.id,
-        };
+        const url = new URL(hook.url);
 
-        if (hookResponse != null) {
-          response["hook"] = hookResponse ? "success" : "failure";
-        }
+        if (hook.includeSlug) url.searchParams.append("slug", node.slug);
+        if (hook.includeId) url.searchParams.append("id", node.id);
+        if (hook.includeName) url.searchParams.append("name", node.name);
 
-        return NextResponse.json(response);
-      } catch (err) {
-        return NextResponse.json({
-          message: "success",
-          id: node.id,
-          hook: false,
-        });
+        const res = await fetch(url.href, options);
+        hookResponse = res.ok && res.status === 200 ? true : false;
       }
-    }
 
-    return NextResponse.json({ message: "success", id: node.id });
-  } catch (err: any) {
-    if (err.code === "P2002") {
-      return NextResponse.json(
-        { message: "error", data: "Slug is already taken" },
-        { status: 400 },
-      );
-    } else {
-      return NextResponse.json(
-        { message: "error", data: err },
-        { status: 400 },
-      );
+      return NextResponse.json({
+        success: true,
+        data: hookResponse ? "success" : "failure",
+      });
+    } catch (err) {
+      return NextResponse.json({ success: true });
     }
   }
+
+  return NextResponse.json({ success: true });
 }

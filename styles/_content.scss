@@ -8,4 +8,15 @@
   a {
     word-wrap: break-word;
   }
+
+  code {
+    @apply font-semibold;
+  }
+
+  &.prose
+    :where(code):not(
+      :where([class~="not-prose"], [class~="not-prose"] *)
+    ):after {
+    content: none !important;
+  }
 }

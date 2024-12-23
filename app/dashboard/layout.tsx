@@ -13,10 +13,8 @@ export default async function DashboardRootLayout({
 
   return (
     <Providers session={session}>
-      <div className="dashboard">
-        <SiteNav></SiteNav>
-        {children}
-      </div>
+      <div className="dashboard">{children}</div>
+      <div id="portal" />
     </Providers>
   );
 }

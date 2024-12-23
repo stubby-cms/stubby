@@ -6,11 +6,12 @@ import { NextRequest, NextResponse } from "next/server";
 export const POST = async (
   req: NextRequest,
   {
-    params: { siteId },
+    params,
   }: {
-    params: { siteId: string };
+    params: Promise<{ siteId: string }>;
   },
 ) => {
+  const { siteId } = await params;
   const session = await getSession();
 
   if (!session?.user.id) {
@@ -23,7 +24,7 @@ export const POST = async (
     },
   });
 
-  if (!siteData || siteData.userId !== session.user.id) {
+  if (!siteData || siteData.ownerId !== session.user.id) {
     return NextResponse.json({ message: "not found" }, { status: 404 });
   }
 

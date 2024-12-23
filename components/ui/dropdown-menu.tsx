@@ -16,6 +16,8 @@ const DropdownMenuPortal = DropdownMenuPrimitive.Portal;
 
 const DropdownMenuSub = DropdownMenuPrimitive.Sub;
 
+const DropdownMenuArrow = DropdownMenuPrimitive.Arrow;
+
 const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
 
 const DropdownMenuSubTrigger = React.forwardRef<
@@ -196,5 +198,6 @@ export {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
+  DropdownMenuArrow,
   DropdownMenuRadioGroup,
 };

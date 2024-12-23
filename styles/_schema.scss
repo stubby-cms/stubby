@@ -1,0 +1,16 @@
+.schema-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+
+  th {
+    text-align: left;
+    font-weight: 400;
+    @apply border-b-2 bg-secondary px-3 py-1.5;
+  }
+
+  td {
+    @apply border-b px-3 py-3;
+  }
+}

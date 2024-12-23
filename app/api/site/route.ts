@@ -1,8 +1,10 @@
 import { getSession } from "@/lib/auth";
-import { defaultPageContent, defaultPageContentOutput } from "@/lib/consts";
+import { extractFrontMatter } from "@/lib/frontmatter";
 import prisma from "@/lib/prisma";
 import { getId } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
+import { getToc } from "./[siteId]/nodes/[nodeId]/md";
+import md from "./onboarding/intro.mdx";
 
 export async function GET(req: NextRequest) {
   const session = await getSession();
@@ -13,7 +15,7 @@ export async function GET(req: NextRequest) {
   try {
     const sites = await prisma.site.findMany({
       where: {
-        user: {
+        owner: {
           id: session.user.id as string,
         },
       },
@@ -24,7 +26,6 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(sites);
   } catch (error: any) {
-    console.log(error);
     return NextResponse.json(
       { message: "failure", data: error.message },
       { status: 400 },
@@ -44,14 +45,17 @@ export async function POST(req: NextRequest) {
   const name = data.siteName;
   const description = data.description;
 
+  console.log("------ 1");
+
   try {
     const siteId = getId();
+
     const response = await prisma.site.create({
       data: {
         id: siteId,
         name,
         description,
-        user: {
+        owner: {
           connect: {
             id: session.user.id,
           },
@@ -59,7 +63,14 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const nodeId = getId(4);
+    const nodeId = getId(6);
+
+    console.log("------ 2");
+
+    const { content, data } = extractFrontMatter(md.toString());
+    const toc = getToc(content);
+
+    console.log("------ 3");
 
     const pageResponse = await prisma.node.create({
       data: {
@@ -68,14 +79,19 @@ export async function POST(req: NextRequest) {
         name: "getting-started",
         isFolder: false,
         parentId: null,
-        userId: session.user.id,
-        content: defaultPageContent,
-        draft: defaultPageContent,
-        output: defaultPageContentOutput,
+        ownerId: session.user.id,
+        content: md.toString(),
+        draft: md.toString(),
         slug: `getting-started-${nodeId}`,
         title: "Getting Started",
+        output: {
+          toc,
+          metadata: data ?? {},
+        },
       },
     });
+
+    console.log("------ 4");
 
     return NextResponse.json({
       message: "success",

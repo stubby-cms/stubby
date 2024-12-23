@@ -72,17 +72,17 @@ export const DiffViewer = ({
           content: node?.draft,
         }),
       });
+
       const data = await res.json();
 
-      if (data.message == "success") {
+      if (data.success) {
         setIsMutating(false);
         toast.success("Published successfully!");
-
         mutate(`/api/site/${siteId}/nodes/${pageId}`);
         setOpen(false);
       } else {
         setIsMutating(false);
-        toast.error("Something went wrong. Please try again.");
+        toast.error(data.error.message);
       }
     } catch (error) {
       setIsMutating(false);

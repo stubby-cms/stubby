@@ -118,6 +118,15 @@ export const registerBackSlashIntellisense = (monacoEditor: Monaco) => {
     triggerCharacters: ["/"],
 
     provideCompletionItems: (model, position) => {
+      // Get the current line content up to the cursor position
+      const lineContent = model.getLineContent(position.lineNumber);
+      const prefix = lineContent.substring(0, position.column - 1).trim();
+
+      // Only provide suggestions if the prefix ends with '/'
+      if (!prefix.endsWith("/")) {
+        return { suggestions: [] };
+      }
+
       const range = {
         startLineNumber: position.lineNumber,
         startColumn: position.column - 1, // Start from the '/' character

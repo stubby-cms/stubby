@@ -7,7 +7,7 @@
 }
 
 .mini-button {
-  @apply rounded-md p-1 hover:bg-gray-200 dark:hover:text-gray-950;
+  @apply rounded-md p-1 hover:bg-secondary dark:hover:text-gray-950;
 }
 
 .icon-button {
@@ -20,4 +20,16 @@
   &[data-state="active"] {
     @apply bg-slate-200 font-medium text-foreground dark:bg-gray-800;
   }
+}
+
+.list-button {
+  @apply flex h-8 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm font-medium text-muted-foreground hover:bg-slate-200/70 dark:hover:bg-slate-900;
+}
+
+.dropdown-item-button {
+  @apply flex h-8 cursor-pointer items-center gap-2 rounded-lg px-2 text-sm font-medium text-secondary-foreground hover:bg-slate-200/70 dark:hover:bg-slate-900;
+}
+
+.link-button {
+  @apply -ml-2.5 inline-flex items-center gap-1.5 rounded-full py-1.5 pl-2.5 pr-4 text-sm font-medium hover:bg-muted;
 }

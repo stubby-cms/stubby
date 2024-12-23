@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -26,6 +27,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { Textarea } from "../ui/textarea";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 const formSchema = z.object({
   siteName: z
@@ -91,6 +93,11 @@ export const CreateSite = () => {
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
               <DialogTitle>Create new site</DialogTitle>
+              <VisuallyHidden>
+                <DialogDescription>
+                  Create a new site to start writing and sharing your thoughts.
+                </DialogDescription>
+              </VisuallyHidden>
             </DialogHeader>
             <div className="mt-3 space-y-8 py-3">
               <FormField

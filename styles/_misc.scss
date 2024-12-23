@@ -1,5 +1,3 @@
-// Skeleton
-
 .sk {
   @apply bg-black/5 dark:bg-white/5;
 }
@@ -50,6 +48,80 @@
       .center-shape {
         @apply dark:fill-[#FFDD00];
       }
+    }
+  }
+}
+
+// Inline input
+// Resizable input
+
+.input-sizer {
+  display: inline-grid;
+  vertical-align: top;
+  align-items: center;
+  position: relative;
+  padding: 2px 4px;
+  border-radius: 8px;
+  border: solid 2px transparent;
+  box-shadow: none;
+
+  &::after,
+  input {
+    width: auto;
+    min-width: 1em;
+    grid-area: 1 / 2;
+    line-height: 1;
+    padding: 4px 4px;
+    margin: 0;
+    resize: none;
+    background: none;
+    appearance: none;
+    border: none;
+    font-size: 14px;
+    @apply font-mono font-medium;
+
+    &:focus,
+    &:active {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+
+  &:before {
+    content: "";
+    min-width: 500px;
+    pointer-events: none;
+    border-radius: 6px;
+    position: absolute;
+    inset: 0;
+  }
+
+  &::after {
+    content: attr(data-value) " ";
+    visibility: hidden;
+    white-space: pre;
+    max-width: 620px;
+  }
+
+  &:hover {
+    border: solid 2px theme("colors.blue.300");
+
+    &::before {
+      display: none;
+    }
+  }
+
+  &:focus-within {
+    border: solid 2px theme("colors.blue.500");
+
+    &::before {
+      display: none;
+    }
+
+    textarea:focus,
+    input:focus {
+      outline: none;
+      box-shadow: none;
     }
   }
 }

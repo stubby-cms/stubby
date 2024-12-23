@@ -1,11 +1,5 @@
 "use client";
 
-import { fetcher } from "@/lib/utils";
-import { Site } from "@prisma/client";
-import useSWR from "swr";
-import { Spinner } from "../ui/spinner";
-
-import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -19,10 +13,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { cn, fetcher } from "@/lib/utils";
+import { Site } from "@prisma/client";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import useSWR from "swr";
+import { Spinner } from "../ui/spinner";
 
 export function SitePicker() {
   const {
@@ -41,7 +38,7 @@ export function SitePicker() {
 
   if (isLoading) {
     return (
-      <div className="flex h-9 w-[120px] items-center justify-center">
+      <div className="flex h-8 w-[120px] items-center justify-center">
         <Spinner size={16} />
       </div>
     );
@@ -49,7 +46,7 @@ export function SitePicker() {
 
   if (error) {
     return (
-      <div className="flex h-9 w-full items-center justify-center">
+      <div className="flex h-8 w-full items-center justify-center">
         Error loading sites
       </div>
     );
@@ -59,19 +56,23 @@ export function SitePicker() {
     <>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
+          <button
             role="combobox"
             aria-expanded={open}
-            className="h-9 min-w-[120px] justify-between rounded-lg px-3 py-1"
+            aria-haspopup="listbox"
+            aria-owns="site-listbox"
+            aria-controls="site-listbox"
+            className="relative flex h-8 max-w-[100%] flex-1 items-center justify-between rounded-lg border-none bg-transparent px-2 text-sm font-medium hover:bg-secondary"
           >
-            {value
-              ? sites?.find((site) => site.id === value)?.name
-              : "Select site..."}
-            <ChevronsUpDown className="-mr-1 ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
+            <div className="truncate">
+              {value
+                ? sites?.find((site) => site.id === value)?.name
+                : "Select site..."}
+            </div>
+            <ChevronsUpDown className="-mr-1 ml-2 h-4 w-4 shrink-0" />
+          </button>
         </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
+        <PopoverContent className="max-w-[240px] p-0">
           <Command>
             <CommandInput placeholder="Search sites..." />
             <CommandList>
@@ -82,18 +83,21 @@ export function SitePicker() {
                     key={site.id}
                     value={site.id}
                     onSelect={(currentValue) => {
-                      setValue(currentValue === value ? "" : currentValue);
-                      setOpen(false);
+                      if (currentValue === value) {
+                        setOpen(false);
+                        return;
+                      }
+                      setValue(currentValue);
                       router.push(`/dashboard/${currentValue}/content`);
                     }}
                   >
                     <Check
                       className={cn(
-                        "mr-2 h-4 w-4",
+                        "mr-2 h-4 w-4 shrink-0",
                         value === site.id ? "opacity-100" : "opacity-0",
                       )}
                     />
-                    {site.name}
+                    <div className="truncate">{site.name}</div>
                   </CommandItem>
                 ))}
               </CommandGroup>

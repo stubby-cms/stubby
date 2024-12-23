@@ -1,9 +1,10 @@
-interface Node {
+export interface Node {
   name: string;
   displayName: string;
   id: string;
   parentId: string | null;
   isFolder: boolean;
+  type: "db" | "file" | "json" | "folder";
 }
 
 export function createFileSystem(
@@ -45,6 +46,7 @@ export function createFileSystem(
         parentId: node.parentId,
         isFolder: node.isFolder,
         displayName: node.name,
+        type: node.type,
       };
 
       const itemType = node.isFolder ? "dir" : "file";

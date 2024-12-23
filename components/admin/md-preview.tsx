@@ -1,13 +1,14 @@
 "use client";
 
-import { extractFrontMatter } from "@/lib/extract-frontmatter";
+import { extractFrontMatter } from "@/lib/frontmatter";
 import Markdown from "markdown-to-jsx";
 import { ErrorBoundary } from "react-error-boundary";
 import { components } from "./components";
 import { MdFallback } from "./fallbacks";
+import { PreBlockClient } from "../content/code.client";
 
-export function MdPreview({ md }: { md: string }) {
-  const { content, data } = extractFrontMatter(md);
+export function MdPreviewClient({ mdx }: { mdx: string }) {
+  const { content, data } = extractFrontMatter(mdx);
 
   return (
     <ErrorBoundary FallbackComponent={MdFallback}>
@@ -15,7 +16,10 @@ export function MdPreview({ md }: { md: string }) {
       {content && (
         <Markdown
           options={{
-            overrides: components,
+            overrides: {
+              ...components,
+              pre: PreBlockClient,
+            },
           }}
         >
           {content}

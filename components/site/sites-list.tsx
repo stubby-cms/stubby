@@ -2,10 +2,10 @@
 
 import { fetcher } from "@/lib/utils";
 import { Site } from "@prisma/client";
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import useSWR from "swr";
 import { Spinner } from "../ui/spinner";
+import { ArrowRight } from "lucide-react";
 
 function SiteCard({ data }: { data: Site }) {
   return (

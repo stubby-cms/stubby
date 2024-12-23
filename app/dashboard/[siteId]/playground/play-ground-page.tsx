@@ -12,21 +12,17 @@ import { fetcher } from "@/lib/utils";
 import { Editor, Monaco } from "@monaco-editor/react";
 import { Node, Site } from "@prisma/client";
 import clsx from "clsx";
-import { Shapes, WrapText } from "lucide-react";
+import { WrapText } from "lucide-react";
 import { editor as EditorType } from "monaco-editor";
 import { useParams } from "next/navigation";
 import { useRef, useState } from "react";
 import useSWR from "swr";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
 import prettyBytes from "pretty-bytes";
 import { CodeSamples } from "./code-samples";
+import { PageFinder } from "./page-finder";
+import { toast } from "sonner";
 
 export const PlaygroundPage = () => {
   const editorRef = useRef<EditorType.IStandaloneCodeEditor>();
@@ -54,25 +50,37 @@ export const PlaygroundPage = () => {
   const sendRequest = async () => {
     let time1 = performance.now();
     setIsLoading(true);
-    const res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/get`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${siteData?.apiKey}`,
-      },
-      body: JSON.stringify({
-        siteId: siteId,
-        requestFor: requestFor,
-        pageSlug: pageSlug,
-        pageId: pageId,
-      }),
-    });
-    const resData = await res.json();
-    let time2 = performance.now();
-    setTimeTaken(time2 - time1);
-    setIsLoading(false);
-    setStatusCode(res.status);
-    setResponseSize(byteSize(JSON.stringify(resData)));
-    editorRef.current?.setValue(JSON.stringify(resData, null, 2));
+
+    let url = new URL(
+      `${process.env.NEXT_PUBLIC_HOST}/api/v1/sites/${siteId}/pages/${pageId || pageSlug}`,
+    );
+
+    if (requestFor === "allPages") {
+      url = new URL(
+        `${process.env.NEXT_PUBLIC_HOST}/api/v1/sites/${siteId}/folders`,
+      );
+    }
+
+    const params = {
+      apiKey: siteData?.apiKey || "",
+    };
+
+    url.search = new URLSearchParams(params).toString();
+
+    try {
+      const res = await fetch(url.toString());
+      const resData = await res.json();
+
+      let time2 = performance.now();
+      setTimeTaken(time2 - time1);
+      setIsLoading(false);
+      setStatusCode(res.status);
+      setResponseSize(byteSize(JSON.stringify(resData)));
+      editorRef.current?.setValue(JSON.stringify(resData, null, 2));
+    } catch (error) {
+      setIsLoading(false);
+      toast.error(`Failed to fetch data!`);
+    }
   };
 
   function handleEditorDidMount(
@@ -91,37 +99,66 @@ export const PlaygroundPage = () => {
   };
 
   const requestForOptions = [
-    { label: "allPages", value: "allPages" },
-    { label: "aPage", value: "aPage" },
+    { label: "Page", value: "aPage" },
+    { label: "Folder", value: "allPages" },
   ];
 
-  const [requestFor, setRequestFor] = useState("allPages");
+  const [requestFor, setRequestFor] = useState("aPage");
   const [pageSlug, setPageSlug] = useState("");
   const [pageId, setPageId] = useState("");
 
   return (
     <div className="main-chrome">
-      <div className="container mt-10 flex gap-4">
-        <div className="flex w-2/5 flex-col gap-5 overflow-y-auto pb-10 pr-8">
-          <div className="endpoint-container flex items-center gap-5">
-            <div className="url-container playground-field flex items-center gap-2">
-              <span className="playground-method-badge">GET</span>
-              <code className="url text-sm">
-                {process.env.NEXT_PUBLIC_HOST}/api/get
-              </code>
-            </div>
+      <div className="flex w-full gap-4 p-10">
+        <div className="flex w-2/5 shrink-0 flex-col gap-5 overflow-y-auto pb-10 pr-8">
+          <div className="flex items-center gap-10 pt-2">
+            <div className="shrink-0 text-sm font-semibold">Endpoint</div>
+            <Select onValueChange={setRequestFor} value={requestFor}>
+              <SelectTrigger className="font-mono">
+                <SelectValue placeholder="aPage" className="font-mono" />
+              </SelectTrigger>
+              <SelectContent>
+                {requestForOptions.map((option) => (
+                  <SelectItem
+                    key={option.value}
+                    className="font-mono"
+                    value={option.value}
+                  >
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             <Button onClick={sendRequest} variant={"brand"} loading={isLoading}>
               Send
             </Button>
           </div>
 
+          <div className="endpoint-container flex flex-col gap-2">
+            <div className="url-container playground-field flex items-center gap-2">
+              <span className="playground-method-badge">GET</span>
+
+              {requestFor == "allPages" ? (
+                <code className="url text-sm">
+                  {`/api/v1/`}
+                  <mark>{`{siteId}`}</mark>/folders
+                </code>
+              ) : (
+                <code className="url text-sm">
+                  {`/api/v1/`}
+                  <mark>{`{siteId}`}</mark>/pages/<mark>{`{id or slug}`}</mark>
+                </code>
+              )}
+            </div>
+          </div>
+
           <div className="headers-container api-container">
-            <div className="api-container-title">Headers</div>
+            <div className="api-container-title">Query params</div>
             <div className="api-container-content">
               <div className="api-field-container">
-                <div className="api-field-label">Authorization</div>
+                <div className="api-field-label">API Key</div>
                 <div className="api-field">
-                  <code className="font-semibold text-slate-500">Bearer</code>
                   <code>{siteData?.apiKey}</code>
                 </div>
               </div>
@@ -137,36 +174,11 @@ export const PlaygroundPage = () => {
                 </div>
               </div>
 
-              <div className="api-field-container">
-                <div className="api-field-label">requestFor</div>
-                <div className="">
-                  <Select onValueChange={setRequestFor} defaultValue="allPages">
-                    <SelectTrigger className="font-mono">
-                      <SelectValue
-                        placeholder="allPages"
-                        className="font-mono"
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {requestForOptions.map((option) => (
-                        <SelectItem
-                          key={option.value}
-                          className="font-mono"
-                          value={option.value}
-                        >
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
               {requestFor == "aPage" && (
                 <>
                   <div className="api-field-container">
                     <div className="api-field-label">
-                      pageSlug <small className="optional-badge">*</small>
+                      slug <small className="optional-badge">*</small>
                     </div>
                     <div className="api-field-dual flex items-center gap-3">
                       <div className="api-field">
@@ -179,36 +191,19 @@ export const PlaygroundPage = () => {
                         />
                       </div>
 
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button className="flex h-8 w-8 items-center justify-center gap-2 rounded-md outline-none hover:bg-slate-200 dark:hover:bg-slate-800">
-                            <Shapes size={20} />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="max-w-[300px]">
-                          {allNodes
-                            ?.filter((e) => !e.isFolder)
-                            .map((node) => (
-                              <DropdownMenuItem
-                                key={node.id}
-                                onSelect={() => {
-                                  setPageId("");
-                                  setPageSlug(node.slug);
-                                }}
-                                className="cursor-pointer font-mono"
-                                title={node.slug}
-                              >
-                                <span className="truncate">{node.slug}</span>
-                              </DropdownMenuItem>
-                            ))}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <PageFinder
+                        nodes={allNodes}
+                        onSelect={(node) => {
+                          setPageId("");
+                          setPageSlug(node.slug);
+                        }}
+                      />
                     </div>
                   </div>
 
                   <div className="api-field-container">
                     <div className="api-field-label">
-                      pageId <small className="optional-badge">*</small>
+                      id <small className="optional-badge">*</small>
                     </div>
                     <div className="api-field-dual flex items-center gap-3">
                       <div className="api-field">
@@ -221,37 +216,13 @@ export const PlaygroundPage = () => {
                         />
                       </div>
 
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button className="flex h-8 w-8 items-center justify-center gap-2 rounded-md outline-none hover:bg-slate-200 dark:hover:bg-slate-800">
-                            <Shapes size={20} />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="max-w-[300px]">
-                          {allNodes
-                            ?.filter((e) => !e.isFolder)
-                            .map((node) => (
-                              <DropdownMenuItem
-                                key={node.id}
-                                onSelect={() => {
-                                  setPageId(node.id);
-                                  setPageSlug("");
-                                }}
-                                className="font-mono"
-                                title={node.id}
-                              >
-                                <div className="flex cursor-pointer flex-col items-start justify-start">
-                                  <div className="truncate">{node.id}</div>
-                                  <div className="text-xs text-slate-500">
-                                    <div className="w-[200px] truncate">
-                                      {node.slug}
-                                    </div>
-                                  </div>
-                                </div>
-                              </DropdownMenuItem>
-                            ))}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <PageFinder
+                        nodes={allNodes}
+                        onSelect={(node) => {
+                          setPageSlug("");
+                          setPageId(node.id);
+                        }}
+                      />
                     </div>
                   </div>
 
@@ -260,9 +231,8 @@ export const PlaygroundPage = () => {
                       *
                     </small>{" "}
                     <span className="opacity-60">
-                      Only one of <code className="font-semibold">pageId</code>{" "}
-                      or <code className="font-semibold">pageSlug</code> is
-                      required
+                      Only one of <code className="font-semibold">id</code> or{" "}
+                      <code className="font-semibold">slug</code> is required
                     </span>
                   </div>
                 </>
@@ -340,12 +310,14 @@ export const PlaygroundPage = () => {
                   readOnly: true,
                   fontSize: 13,
                   lineHeight: 16,
+
                   fontFamily: "var(--font-mono)",
                   minimap: {
                     enabled: false,
                   },
                   scrollBeyondLastLine: false,
                   scrollBeyondLastColumn: 10,
+
                   scrollbar: {
                     useShadows: false,
                     verticalScrollbarSize: 8,
